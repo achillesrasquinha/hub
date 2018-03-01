@@ -3,11 +3,11 @@ from elasticsearch import Elasticsearch
 import frappe
 from   frappe import _
 
-def doctype_to_index(doctype):
-    index = doctype.lower()
-    index = doctype.replace(' ', '')
+def doctype_to_index(name):
+    name = name.lower()
+    name = name.replace(' ', '')
 
-    return index
+    return name
 
 class ESearch(object):
     def __init__(self):
@@ -19,7 +19,6 @@ class ESearch(object):
         response     = [ ]
 
         indices      = ", ".join(indices) if indices else "_all"
-        print("Querying indices: {indices}".format(indices = indices))
         response     = self.esearch.search(indices)
         
         return response
