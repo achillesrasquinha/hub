@@ -5,8 +5,6 @@ const frappe = require("frappe")
 const hub    = { }
 
 // Accept socket connections from any domain.
-frappe.socket.set("origins", "*:*")
-
 frappe.socket.on("connection", (socket) =>
 {
     // convention - [app].[domain].[object]:[action]

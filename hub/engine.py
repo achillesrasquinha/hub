@@ -16,7 +16,10 @@ class ESearch(object):
 
     def search(self, query, indices = [ ], meta = [ ], filters = [ ], limit = 10,
         pagination   = 1):
-        response     = "barfoo"
+        response     = [ ]
+
+        indices      = ", ".join(indices) if indices else "_all"
+        response     = es.search(indices)
         
         return response
 
