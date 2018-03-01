@@ -12,17 +12,21 @@ def get_user(access_token):
 
 import logging
 
-from hub.util import safe_json_loads, assign_if_empty
+from frappe.chat.util import (
+	assign_if_empty,
+	safe_json_loads
+)
 
 log = logging.getLogger(__name__)
 
 @frappe.whitelist(allow_guest = True)
-def search(query, types = None, fields = None):
+def search(query, types = [ ], fields = [ ], filters = [ ], limit = 10,
+	pagination = 1):
 	from hub.engine import search
 	
-	types   = assign_if_empty(safe_json_loads(types),  [ ])
-	fields  = assign_if_empty(safe_json_loads(fields), [ ])
+	types, fields, filters = safe_json_loads(types, fields, filters)
 
-	results = search(query, types = types, fields = fields)
+	results = search(query, types = types, fields = fields, filters = filters,
+		limit = limit, pagination = pagination)
 
 	return results
