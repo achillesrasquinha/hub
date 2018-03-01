@@ -6,7 +6,7 @@ class ESearch(object):
         self.connected = self.esearch.ping()
 
     def search(self, query, indices = [ ], meta = [ ]):
-        response = [ ]
+        response = "foobar"
 
         return response
 
