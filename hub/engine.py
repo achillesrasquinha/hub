@@ -20,7 +20,14 @@ class ESearch(object):
         response     = [ ]
 
         indices      = ", ".join(indices) if indices else "_all"
-        response     = self.esearch.search(indices)
+        
+        query        = dict(
+            query    = dict(
+                match_all = dict()
+            )
+        )
+
+        response     = self.esearch.search(indices, body = query)
         
         return response
 
