@@ -19,7 +19,7 @@ class ESearch(object):
         response     = [ ]
 
         indices      = ", ".join(indices) if indices else "_all"
-        print("Querying indices: {indices}".format(indices))
+        print("Querying indices: {indices}".format(indices = indices))
         response     = self.esearch.search(indices)
         
         return response
