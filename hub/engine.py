@@ -11,7 +11,7 @@ class ESearch(object):
     def search(self, query, indices = [ ], meta = [ ], limit = 10,
         pagination = 1):
 
-        response     = "foobar"
+        response     = "barfoo"
 
         return response
 
