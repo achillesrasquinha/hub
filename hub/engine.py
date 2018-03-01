@@ -10,6 +10,10 @@ def doctype_to_index(name):
 
     return name
 
+def index_to_doctype(name):
+    # TODO
+    return name
+
 class ESearch(object):
     def __init__(self):
         self.esearch   = Elasticsearch()
@@ -43,6 +47,17 @@ def search(query, types = [ ], fields = [ ], filters = [ ], limit = 10,
 
         results = esearch.search(query = query, indices = indices, meta = fields,
             filters = filters, limit = limit, pagination = pagination)
+
+        results = dict(
+            results = [
+                dict(
+                    type  = index_to_doctype(result['_index']),
+                    name  = result['_id'],
+                    score = result['_score']
+                ) for result in results['hits']['hits']
+            ]
+        )
+
         return results
     else:
         frappe.throw(_("Unable to connect to Elastic Search"))
