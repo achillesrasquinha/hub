@@ -25,7 +25,7 @@ def build_response(results):
         results = [
             dict(
                  type = index_to_doctype(result['_index']),
-                 name = result['_name'],
+                 name = result['_id'],
                 score = result['_score']
             ) for result in results['hits']['hits']
         ],
