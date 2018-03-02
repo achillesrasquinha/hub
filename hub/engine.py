@@ -29,7 +29,7 @@ def build_response(results):
                 score = result['_score']
             ) for result in results['hits']['hits']
         ],
-        count   = result['total']
+        count   = results['hits']['total']
     )
 
     return response
