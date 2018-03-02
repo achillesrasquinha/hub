@@ -1,8 +1,13 @@
 from __future__ import absolute_import
 
-import frappe
+import logging
 
-__version__ = '0.0.1'
+import frappe
+from   hub.__attr__ import *
+from   hub.util import get_if_empty, safe_json_loads
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 def get_user(access_token):
 	hub_user_name = frappe.db.get_value('Hub User', {'access_token': access_token})
@@ -10,23 +15,19 @@ def get_user(access_token):
 		frappe.throw('Invalid access token', frappe.PermissionError)
 	return hub_user_name
 
-import logging
-
-from frappe.chat.util import (
-	assign_if_empty,
-	safe_json_loads
-)
-
-log = logging.getLogger(__name__)
-
 @frappe.whitelist(allow_guest = True)
-def search(query, types = [ ], fields = [ ], filters = [ ], limit = 10,
-	pagination = 1):
+def search(query, types = [ ], fields = [ ], filters = [ ], limit = 10, page = 1):
+	"""
+	Hub Search API
+	"""
 	from hub.engine import search
 	
 	types, fields, filters = safe_json_loads(types, fields, filters)
+	parameters = dict(types = types, fields = fields, filters = filters,
+		limit = limit, page = page)
 
-	results = search(query, types = types, fields = fields, filters = filters,
-		limit = limit, pagination = pagination)
+	log.debug("hub.search: Parameters - {}".format(parameters))
+
+	results = search(query, **parameters)
 
 	return results

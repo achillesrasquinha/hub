@@ -2,63 +2,51 @@ from elasticsearch import Elasticsearch
 
 import frappe
 from   frappe import _
-from   frappe.chat.util import listify
+from   hub.util import sequencify
 
 def doctype_to_index(name):
-    name = name.lower()
-    name = name.replace(' ', '')
+    name = name.strip()           
+    name = name.lower()           
+    name = name.replace(' ', '-')
 
     return name
 
 def index_to_doctype(name):
-    # TODO
+    name = name.strip()
+    name = " ".join(name.split("-"))
+    name = name.title()
+
     return name
+
+def build_response(results):
+    return results
 
 class ESearch(object):
     def __init__(self):
         self.esearch   = Elasticsearch()
         self.connected = self.esearch.ping()
 
-    def search(self, query, indices = [ ], meta = [ ], filters = [ ], limit = 10,
-        pagination   = 1):
-        response     = [ ]
-
-        indices      = ", ".join(indices) if indices else "_all"
+    def search(self, query, indices = [ ], source = [ ], filters = [ ], limit = 10, page = 1):
+        indices  = ", ".join(indices) if indices else "_all"
         
-        query        = dict(
-            query    = dict(
-                match_all = dict()
-            )
-        )
-
-        response     = self.esearch.search(indices, body = query)
+        query    = { "query": { "match_all": { } } }
+        response = self.esearch.search(indices, body = query)
         
         return response
 
-def search(query, types = [ ], fields = [ ], filters = [ ], limit = 10,
-	pagination = 1):
+def search(query, types = [ ], fields = [ ], filters = [ ], limit = 10, page = 1):
     esearch = ESearch()
-
-    types   = listify(types)
-    fields  = listify(fields)
-
     if esearch.connected:
-        indices = [doctype_to_index(doctype) for doctype in types]
+        types    = sequencify(types)
+        fields   = sequencify(fields)
 
-        results = esearch.search(query = query, indices = indices, meta = fields,
-            filters = filters, limit = limit, pagination = pagination)
+        indices  = [doctype_to_index(doctype) for doctype in types]
 
-        results = dict(
-            results = [
-                dict(
-                    type  = index_to_doctype(result['_index']),
-                    name  = result['_id'],
-                    score = result['_score']
-                ) for result in results['hits']['hits']
-            ]
-        )
+        results  = esearch.search(query = query, indices = indices, source = fields,
+            filters = filters, limit = limit, page = page)
 
-        return results
+        response = build_response(results)
+
+        return response
     else:
-        frappe.throw(_("Unable to connect to Elastic Search"))
-    
+        frappe.throw("Unable to connect to Elastic Search.")
