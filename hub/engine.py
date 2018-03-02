@@ -23,15 +23,15 @@ def index_to_doctype(name):
 def build_response(results):
     response = dict(
         results = [
-            {
-                 "type": index_to_doctype(result['_index']),
-                 "name": result['_name'],
-                "score": result['_score']
-            }
-        ] for result in results['hits']['hits'],
+            dict(
+                 type = index_to_doctype(result['_index']),
+                 name = result['_name'],
+                score = result['_score']
+            ) for result in results['hits']['hits']
+        ],
         count   = result['total']
     )
-    
+
     return response
 
 class ESearch(object):
